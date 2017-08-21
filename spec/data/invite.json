@@ -1,0 +1,25 @@
+{
+  "max_age": 0,
+  "code": "PMCVmkP",
+  "guild": {
+    "splash": null,
+    "id": "225375815087554563",
+    "icon": "70edbed16d93b9615af82948ded07962",
+    "name": "Y32"
+  },
+  "created_at": "2017-08-15T22:55:10.759000+00:00",
+  "temporary": false,
+  "uses": 1,
+  "max_uses": 0,
+  "inviter": {
+    "username": "z64",
+    "discriminator": "2639",
+    "id": "120571255635181568",
+    "avatar": "13b63caaed3316f7f7465ae90759caba"
+  },
+  "channel": {
+    "type": 0,
+    "id": "240151895761485825",
+    "name": "information"
+  }
+}
