@@ -2554,11 +2554,7 @@ module Discordrb
     # @return [Member] The server owner.
     attr_reader :owner
 
-    # @return [Array<Channel>] an array of all the channels (text and voice) on this server.
     attr_reader :channels
-
-    # @return [Array<Role>] an array of all the roles created on this server.
-    attr_reader :roles
 
     # @return [Hash<Integer, Emoji>] a hash of all the emoji available on this server.
     attr_reader :emoji
@@ -2647,10 +2643,10 @@ module Discordrb
     end
 
     # Gets a role on this server based on its ID.
-    # @param id [Integer, String, #resolve_id] The role ID to look for.
-    def role(id)
-      id = id.resolve_id
-      @roles.find { |e| e.id == id }
+    # @param role_id [Integer, String, #resolve_id] The role ID to look for.
+    def role(role_id)
+      role_id = role_id.resolve_id
+      @roles.find { |id, _role| id == role_id }
     end
 
     # Gets a member on this server based on user ID
@@ -2678,6 +2674,16 @@ module Discordrb
     end
 
     alias_method :users, :members
+
+    # @return [Array<Role>] an array of all the roles created on this server.
+    def roles
+      @roles.values
+    end
+
+    # @return [Array<Channel>] an array of all the channels (text and voice) on this server.
+    def channels
+      @channels.values
+    end
 
     # @return [Array<Integration>] an array of all the integrations connected to this server.
     def integrations
@@ -2801,14 +2807,14 @@ module Discordrb
     # @note For internal use only
     # @!visibility private
     def add_role(role)
-      @roles << role
+      @roles[role.id] = role
     end
 
     # Removes a role from the role cache
     # @note For internal use only
     # @!visibility private
     def delete_role(role_id)
-      @roles.reject! { |r| r.id == role_id }
+      @roles.delete(role_id)
       @members.each do |_, member|
         new_roles = member.roles.reject { |r| r.id == role_id }
         member.update_roles(new_roles)
@@ -2862,7 +2868,7 @@ module Discordrb
         end
 
         # Update the existing voice state (or the one we just created)
-        channel = @channels_by_id[data['channel_id'].to_i]
+        channel = @channels[data['channel_id'].to_i]
         @voice_states[user_id].update(
           channel,
           data['mute'],
@@ -2890,7 +2896,8 @@ module Discordrb
       raise ArgumentError, 'Channel type must be either 0 (text) or 2 (voice)!' unless [0, 2].include?(type)
       permission_overwrites.map! { |e| e.is_a?(Overwrite) ? e.to_hash : e }
       response = API::Server.create_channel(@bot.token, @id, name, type, bitrate, user_limit, permission_overwrites, nsfw, reason)
-      Channel.new(JSON.parse(response), @bot)
+      channel = Channel.new(JSON.parse(response), @bot)
+      add_channel(channel)
     end
 
     # Creates a role on this server which can then be modified. It will be initialized
@@ -2907,8 +2914,7 @@ module Discordrb
       response = API::Server.create_role(@bot.token, @id, name, colour, hoist, mentionable, packed_permissions, reason)
 
       role = Role.new(JSON.parse(response), @bot, self)
-      @roles << role
-      role
+      add_role(role)
     end
 
     # @return [Array<User>] a list of banned users on this server.
@@ -3088,16 +3094,14 @@ module Discordrb
     # @note For internal use only
     # @!visibility private
     def add_channel(channel)
-      @channels << channel
-      @channels_by_id[channel.id] = channel
+      @channels[channel.id] = channel
     end
 
     # Deletes a channel from this server's cache
     # @note For internal use only
     # @!visibility private
     def delete_channel(id)
-      @channels.reject! { |e| e.id == id }
-      @channels_by_id.delete(id)
+      @channels.delete(id)
     end
 
     # Updates the cached emoji data with new data
@@ -3127,14 +3131,12 @@ module Discordrb
 
     def process_roles(roles)
       # Create roles
-      @roles = []
-      @roles_by_id = {}
+      @roles = {}
 
       return unless roles
       roles.each do |element|
         role = Role.new(element, @bot, self)
-        @roles << role
-        @roles_by_id[role.id] = role
+        @roles[role.id] = role
       end
     end
 
@@ -3170,14 +3172,12 @@ module Discordrb
     end
 
     def process_channels(channels)
-      @channels = []
-      @channels_by_id = {}
+      @channels = {}
 
       return unless channels
       channels.each do |element|
         channel = @bot.ensure_channel(element, self)
-        @channels << channel
-        @channels_by_id[channel.id] = channel
+        @channels[channel.id] = channel
       end
     end
 
