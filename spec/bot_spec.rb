@@ -82,4 +82,10 @@ module Discordrb
       end
     end
   end
+
+  describe '#create_guild_role' do
+    it 'updates a role if it is already cached' do
+      raise 'bug!'
+    end
+  end
 end
