@@ -4,6 +4,7 @@ require 'discordrb/bot'
 require 'discordrb/middleware/stack'
 require 'discordrb/middleware/handler'
 require 'discordrb/middleware/handler_middleware'
+require 'discordrb/middleware/stock'
 
 # Module for middleware-related functionality
 module Discordrb::Middleware
@@ -92,12 +93,22 @@ module Discordrb::Middleware
       # @!visibility private
       def event_handler(name, klass)
         define_method(name) do |*middleware, **attributes, &block|
-          unless attributes.empty?
-            handler = Discordrb::EventContainer.handler_class(klass).new(attributes, nil)
-            middleware.unshift(HandlerMiddleware.new(handler))
+          middleware.each do |mw|
+            raise ArgumentError, "Middleware #{mw} does not repsond to `#call(event, state, &block)`" unless mw.respond_to?(:call)
           end
-          stack = Stack.new(middleware)
-          (event_handlers[klass] ||= []) << Handler.new(stack, block)
+
+          stock_middleware = if Stock.respond_to?(name)
+                               Stock.send(name, attributes)
+                             else
+                               # TODO: Remove once all events implemented under Stock
+                               handler = Discordrb::EventContainer.handler_class(klass).new(attributes, nil)
+                               HandlerMiddleware.new(handler)
+                             end
+          stack = Stack.new(Array(stock_middleware) + middleware)
+          handler = Handler.new(stack, block)
+
+          (event_handlers[klass] ||= []) << handler
+          handler
         end
       end
     end
