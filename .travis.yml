@@ -1,25 +1,51 @@
-language: ruby
-cache:
-  directories:
-    - vendor/bundle/
-    - /home/travis/.rvm/
-before_cache:
-  - bundle clean
-rvm:
-  - 2.2.10
-  - 2.3.7
-  - 2.4.4
-  - 2.5.1
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-script:
-  - bundle exec rspec spec
-  - bundle exec rubocop -c .rubocop.yml
-  - bin/travis_build_docs.sh
-after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+cache: bundler
+
+dry:
+  before_script: &before_script
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
+  script: &script
+    - bundle exec rspec spec
+    - bundle exec rubocop -c .rubocop.yml
+    - bin/travis_build_docs.sh
+  after_script: &after_script
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+
+jobs:
+  include:
+    - stage: prepare cache
+      script: true
+      rvm:
+        - 2.2
+        - 2.3
+        - 2.4
+        - 2.5
+
+    - stage: test
+      before_script: *before_script
+      script: *script
+      after_script: *after_script
+      rvm: 2.2
+
+    - stage: test
+      before_script: *before_script
+      script: *script
+      after_script: *after_script
+      rvm: 2.3
+
+    - stage: test
+      before_script: *before_script
+      script: *script
+      after_script: *after_script
+      rvm: 2.4
+
+    - stage: test
+      before_script: *before_script
+      script: *script
+      after_script: *after_script
+      rvm: 2.5
+
 deploy:
   - provider: pages
     skip-cleanup: true
