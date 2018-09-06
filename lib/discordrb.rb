@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# test
+
 require 'discordrb/version'
 require 'discordrb/bot'
 require 'discordrb/commands/command_bot'
