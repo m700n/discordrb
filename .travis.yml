@@ -1,4 +1,10 @@
 language: ruby
+cache:
+  directories:
+    - vendor/bundle/
+    - /home/travis/.rvm/
+before_cache:
+  - bundle clean
 rvm:
   - 2.2.10
   - 2.3.7
