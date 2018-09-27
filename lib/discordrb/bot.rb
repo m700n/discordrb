@@ -30,6 +30,7 @@ require 'discordrb/container'
 require 'discordrb/websocket'
 require 'discordrb/cache'
 require 'discordrb/gateway'
+require 'discordrb/mention_parser'
 
 require 'discordrb/voice/voice_bot'
 
@@ -455,6 +456,47 @@ module Discordrb
       elsif /<(?<animated>a)?:(?<name>\w+):(?<id>\d+)>/ =~ mention
         emoji(id) || Emoji.new({ 'animated' => !animated.nil?, 'name' => name, 'id' => id }, self, nil)
       end
+    end
+
+    def parse_mentions(string, server = nil)
+      mentions = []
+      MentionParser.new.parse(string) do |mention|
+        kind = mention[0]
+        case kind
+        when :user
+          # if server
+          #   user = server.member(mention[1])
+          # else
+          user = self.user(mention[1])
+          # end
+          mentions << user if user
+        when :channel
+          channel = self.channel(mention[1], server)
+          mentions << channel if channel
+        when :role
+          role = nil
+          if server
+            role = server.role(mention[1])
+          else
+            @servers.values.each do |s|
+              role = s.role(mention[1])
+              next if role
+            end
+          end
+          mentions << role if role
+        when :emoji
+          animated = mention[1]
+          name = mention[2]
+          id = mention[3]
+          cached_emoji = emoji(id)
+          if cached_emoji
+            mentions << cached_emoji
+          else
+            Emoji.new({ 'animated' => animated, 'name' => name, 'id' => id }, self, nil)
+          end
+        end
+      end
+      mentions
     end
 
     # Updates presence status.
