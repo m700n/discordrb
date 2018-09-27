@@ -1,5 +1,5 @@
-require "discordrb"
-require "benchmark/ips"
+require 'discordrb'
+require 'benchmark/ips'
 
 # stubs
 class Discordrb::Bot
@@ -7,7 +7,7 @@ class Discordrb::Bot
     [:user, id]
   end
 
-  def channel(id, server = nil)
+  def channel(id, _server = nil)
     [:channel, id]
   end
 
@@ -41,6 +41,7 @@ class Discordrb::Bot
   end
 end
 
+# Server stub
 class Server
   def role(id)
     [:role, id]
@@ -49,18 +50,17 @@ end
 
 server = Server.new
 
-
 # benchmark
-bot = Discordrb::Bot.new(token: "token")
+bot = Discordrb::Bot.new(token: 'token')
 
-string = "<@123456789> <@!123456789> <#123456789> <@&123456789> <a:foo:123456789> <:foo:123456789>"
+string = '<@123456789> <@!123456789> <#123456789> <@&123456789> <a:foo:123456789> <:foo:123456789>'
 
 Benchmark.ips do |x|
-  x.report("custom parser") do
+  x.report('custom parser') do
     bot.parse_mentions(string, server)
   end
 
-  x.report("regex") do
+  x.report('regex') do
     bot.parse_mentions_regex(string, server)
   end
 
