@@ -6,18 +6,21 @@ module Discordrb
     attr_reader :current_char
 
     def next_char
-      @current_char = @reader.getc
+      @current_char = @string[@pos]
+      @pos += 1
+      @current_char
     end
 
     def peek_next_char
-      @reader.string[@reader.pos]
+      @string[@pos]
     end
 
-    def parse(str)
-      @reader = StringIO.new(str)
+    def parse(string)
+      @string = string
+      @pos = 0
 
       loop do
-        char = @reader.getc
+        char = next_char
         break unless char
         case char
         when '@'
@@ -86,18 +89,18 @@ module Discordrb
     end
 
     def consume_ascii
-      start = @reader.pos
+      start = @pos
       length = 0
       loop do
         break unless current_char && current_ascii_character?
         next_char
         length += 1
       end
-      @reader.string.slice(start - 1, length)
+      @string.slice(start - 1, length)
     end
 
     def consume_id
-      start = @reader.pos
+      start = @pos
       length = 0
       loop do
         break unless current_char && current_number?
@@ -106,7 +109,7 @@ module Discordrb
       end
 
       begin
-        id = @reader.string.slice(start - 1, length)
+        id = @string.slice(start - 1, length)
         Integer(id)
       rescue ArgumentError
         nil
