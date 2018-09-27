@@ -77,8 +77,8 @@ module Discordrb
       end
     end
 
-    def current_ascii_letter?
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMOPQRSTUVWXYZ'.include?(current_char)
+    def current_ascii_character?
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMOPQRSTUVWXYZ0123456789'.include?(current_char)
     end
 
     def current_number?
@@ -89,7 +89,7 @@ module Discordrb
       start = @reader.pos
       length = 0
       loop do
-        break unless current_char && current_ascii_letter?
+        break unless current_char && current_ascii_character?
         next_char
         length += 1
       end
