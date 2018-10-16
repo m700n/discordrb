@@ -61,6 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Bot#parse_mention` parses `Channel` mentions ([#525](https://github.com/meew0/discordrb/pull/525), thanks @estherbolik)
 - Support for Discord's `zlib-stream` gateway compression, as well as options to configure the compression mode in `Bot#initialize` ([#527](https://github.com/meew0/discordrb/pull/527), thanks @oct2pus for additional testing)
 - "Priority Speaker" permission bit ([#530](https://github.com/meew0/discordrb/pull/530), thanks @Chewsterchew)
+- Implemented `aliases` attribute in commands, for an improved alternative to "command copying" by passing an array to the command name ([#524](https://github.com/meew0/discordrb/pull/524))
+- Methods for managing a `Channel`'s slowmode settings ([#573](https://github.com/meew0/discordrb/pull/573), thanks @badBlackShark)
 
 ### Changed
 
@@ -84,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Cache#find_user` can now find individual users if name and discriminator is given ([#384](https://github.com/meew0/discordrb/pull/384))
 - `ReactionEvent` provides server, and member if possible ([#351](https://github.com/meew0/discordrb/pull/351), thanks @Daniel-Worrall)
 - Installation instructions now include guides for installing with bundler ([#386](https://github.com/meew0/discordrb/pull/386), [#405](https://github.com/meew0/discordrb/pull/405), thanks @VxJasonxV and @PixeLInc)
-- `default_channel` implementation is updated to reflect Discord changes ([#382](https://github.com/meew0/discordrb/pull/382))
+- `default_channel` implementation is updated to reflect Discord changes ([#382](https://github.com/meew0/discordrb/pull/382), [#534](https://github.com/meew0/discordrb/pull/534))
 - Documentation around the conditions where our API returns `nil` is clarified ([#395](https://github.com/meew0/discordrb/pull/395), thanks @LikeLakers2)
 - Whenever possible, we update cached data about a `Server` returned to us from making changes to it
 - `Cache#server` now returns `nil` if a server is not found instead of raising an exception ([#424](https://github.com/meew0/discordrb/pull/424), thanks @soukouki)
@@ -105,6 +107,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Bot#join` is renamed to `Bot#accept_invite` ([#521](https://github.com/meew0/discordrb/pull/521))
 - `Embed#colour=` accepts instances of `ColourRGB` ([#523](https://github.com/meew0/discordrb/pull/523))
 - `Gateway` now performs certificate validation, and enforces use of TLSv1.2. If you experience issues (please report them!), you can return to the old codepath by setting `DISCORDRB_SSL_VERIFY_NONE` ([#528](https://github.com/meew0/discordrb/pull/528), thanks @cky)
+- Documentation clarifications around `voice_state_update`, `member_update`, and `server_create` ([#531](https://github.com/meew0/discordrb/pull/531))
+- URLs listed across the code base now use https, various other cleanups ([#540](https://github.com/meew0/discordrb/pull/540), thanks @ChallahuAkbar)
+- Dependency on the `ffi` gem is restricted to `>= 1.9.24` to prevent a security exploit on Windows, per [CVE-2018-1000201](https://nvd.nist.gov/vuln/detail/CVE-2018-1000201) ([#544](https://github.com/meew0/discordrb/pull/544))
 
 ### Deprecated
 
@@ -146,6 +151,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Roles will no longer be cached twice when using `Server#create_role` ([#488](https://github.com/meew0/discordrb/pull/488))
 - Race condition when creating event handlers inside of other event handlers ([#514](https://github.com/meew0/discordrb/pull/514))
 - Command chain execution is halted immediately if `execute_command` fails, fixing some possible errors to occur with `advanced_functionality` ([#517](https://github.com/meew0/discordrb/pull/517), thanks @unleashy)
+- In the event non-existent role IDs are observed in a member object, they are ignored to prevent cache related errors ([#535](https://github.com/meew0/discordrb/pull/535))
+- `end_with` attribute in `MessageEventHandler` now accepts group-less regular expressions without throwing exceptions ([#571](https://github.com/meew0/discordrb/pull/571), thanks @badBlackShark)
+- `PresenceEvent` is correctly raised when dispatched ([#574](https://github.com/meew0/discordrb/pull/574))
+- `Attachment#initialize` correctly sets `@id` instance variable ([#575](https://github.com/meew0/discordrb/pull/575), thanks @kandayo)
 
 ## [3.2.1] - 2017-02-18
 [3.2.1]: https://github.com/meew0/discordrb/releases/tag/v3.2.1
