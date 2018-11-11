@@ -612,7 +612,7 @@ module Discordrb
               end
 
               # If there is one, handle it and try again
-              handle_message(msg.data)
+              Thread.new { handle_message(msg.data) }
               msg = frame.next
             end
           else
