@@ -20,7 +20,11 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'rest-client', '>= 2.1.0.rc1'
+  if Gem.win_platform? && RUBY_VERSION >= '2.5.0'
+    spec.add_dependency 'rest-client', '>= 2.1.0.rc1'
+  else
+    spec.add_dependency 'rest-client', '~> 2.0'
+  end
 
   spec.required_ruby_version = '>= 2.3.7'
 end
