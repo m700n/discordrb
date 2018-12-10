@@ -997,6 +997,7 @@ module Discordrb
         init_cache
 
         @profile = Profile.new(data['user'], self)
+        LOGGER.info("Connected as #{@profile.distinct}, waiting for #{data['guilds'].size} to load..")
 
         # Initialize servers
         @servers = {}
@@ -1309,7 +1310,7 @@ module Discordrb
     def notify_ready
       # Make sure to raise the event
       raise_event(ReadyEvent.new(self))
-      LOGGER.good 'Ready'
+      LOGGER.info("Ready with #{@servers.size} loaded")
 
       @gateway.notify_ready
     end
