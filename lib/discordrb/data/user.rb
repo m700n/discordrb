@@ -48,7 +48,7 @@ module Discordrb
     include IDObject
     include UserAttributes
 
-    # @return [Symbol] the current online status of the user (`:online`, `:offline` or `:idle`)
+    # @return [Symbol] the current online status of the user (`:online`, `:offline`, `:dnd`, or `:idle`)
     attr_reader :status
 
     # @return [String, nil] the game the user is currently playing, or `nil` if none is being played.
