@@ -388,6 +388,17 @@ module Discordrb
       nil
     end
 
+    # Returns a single message from a channel.
+    # @param channel [Channel, Integer, String] The channel, or channel ID where the message is located.
+    # @param message [Message, Integer, String] The message, or message ID.
+    # @return [Message, nil] The message, or `nil` if it couldn't be found.
+    def load_message(channel, message)
+      response = API::Channel.message(@token, channel.resolve_id, message.resolve_id)
+      Message.new(JSON.parse(response), self)
+    rescue RestClient::ResourceNotFound
+      nil
+    end
+
     # Sends a file to a channel. If it is an image, it will automatically be embedded.
     # @note This executes in a blocking way, so if you're sending long files, be wary of delays.
     # @param channel [Channel, Integer, #resolve_id] The channel to send something to.
