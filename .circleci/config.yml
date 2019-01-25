@@ -36,6 +36,12 @@ version: 2
   tags:
     only: /^v.*/
 
+.deploy_filters: &deploy_filters
+  branches:
+    only: /master/
+  tags:
+    only: /^v.*/
+
 jobs:
   test_ruby_24:
     docker:
@@ -156,12 +162,9 @@ workflows:
           filters: *test_filters
   deploy:
     jobs:
-      - yard
+      - yard:
+          filters: *deploy_filters
       - pages:
           requires:
             - yard
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /^v.*/
+          filters: *deploy_filters
