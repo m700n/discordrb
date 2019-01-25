@@ -36,20 +36,17 @@ version: 2
   tags:
     only: /^v.*/
 
-.install_discordrb: &install_discordrb
-  - *install_packages
-  - *ruby_version
-  - *restore_bundle_cache
-  - *install_dependencies
-  - *save_bundle_cache
-
 jobs:
   test_ruby_24:
     docker:
       - image: ruby:2.4-alpine
     steps:
       - checkout
-      - <<: *install_discordrb
+      - *install_packages
+      - *ruby_version
+      - *restore_bundle_cache
+      - *install_dependencies
+      - *save_bundle_cache
       - run:
         name: Run RSpec
         command: bundle exec rspec
@@ -59,7 +56,11 @@ jobs:
       - image: ruby:2.5-alpine
     steps:
       - checkout
-      - <<: *install_discordrb
+      - *install_packages
+      - *ruby_version
+      - *restore_bundle_cache
+      - *install_dependencies
+      - *save_bundle_cache
       - run:
         name: Run RSpec
         command: bundle exec rspec
@@ -69,7 +70,11 @@ jobs:
       - image: ruby:2.6-alpine
     steps:
       - checkout
-      - <<: *install_discordrb
+      - *install_packages
+      - *ruby_version
+      - *restore_bundle_cache
+      - *install_dependencies
+      - *save_bundle_cache
       - run:
         name: Run RSpec
         command: bundle exec rspec
@@ -79,7 +84,11 @@ jobs:
       - image: ruby:2.5-alpine
     steps:
       - checkout
-      - <<: *install_discordrb
+      - *install_packages
+      - *ruby_version
+      - *restore_bundle_cache
+      - *install_dependencies
+      - *save_bundle_cache
       - run:
         name: Run Rubocop
         command: bundle exec rubocop
@@ -88,10 +97,14 @@ jobs:
     docker:
       - image: ruby:2.5-alpine
     steps:
+      - checkout
+      - *install_packages
+      - *ruby_version
+      - *restore_bundle_cache
+      - *install_dependencies
+      - *save_bundle_cache
       - attach_workspace:
           at: /tmp/workspace
-      - checkout
-      - <<: *install_discordrb
       - run:
           name: Run YARD
           command: bundle exec yard --output-dir /tmp/workspace/docs
