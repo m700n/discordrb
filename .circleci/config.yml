@@ -48,8 +48,8 @@ jobs:
       - *install_dependencies
       - *save_bundle_cache
       - run:
-        name: Run RSpec
-        command: bundle exec rspec
+          name: Run RSpec
+          command: bundle exec rspec
 
   test_ruby_25:
     docker:
