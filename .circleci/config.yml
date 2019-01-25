@@ -103,7 +103,7 @@ jobs:
           paths:
             - docs
 
-  deploy:
+  pages:
     machine: true
     steps:
       - attach_workspace:
@@ -132,9 +132,8 @@ jobs:
 
 workflows:
   version: 2
-  ci:
+  test:
     jobs:
-      # Test Ruby platforms:
       - test_ruby_24:
           filters: *test_filters
       - test_ruby_25:
@@ -145,14 +144,11 @@ workflows:
           filters: *test_filters
       - yard:
           filters: *test_filters
-
-      # Deploy GitHub pages if all jobs pass on master branch or a tag:
-      - deploy:
+  deploy:
+    jobs:
+      - yard
+      - pages:
           requires:
-            - test_ruby_24
-            - test_ruby_25
-            - test_ruby_26
-            - rubocop
             - yard
           filters:
             branches:
